@@ -6,9 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <studio.zewei.willy.customcontrolscameraview.CustomControlsCameraView
-        android:id="@+id/cameraView"
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/permissionTv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black" />
+        android:gravity="center"
+        android:text="Need Permission." />
 </androidx.constraintlayout.widget.ConstraintLayout>

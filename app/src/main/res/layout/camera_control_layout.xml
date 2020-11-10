@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/captureBtn"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/white_capture_btn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/lenSwitchBtn"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="30dp"
+        android:padding="20dp"
+        android:src="@drawable/ic_camera_return"
+        app:layout_constraintBottom_toBottomOf="@id/captureBtn"
+        app:layout_constraintStart_toEndOf="@id/captureBtn" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/flashlightSwitchBtn"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="30dp"
+        android:padding="20dp"
+        android:src="@drawable/ic_camera_no_light"
+        app:layout_constraintBottom_toBottomOf="@id/captureBtn"
+        app:layout_constraintEnd_toStartOf="@id/captureBtn" />
+</androidx.constraintlayout.widget.ConstraintLayout>
