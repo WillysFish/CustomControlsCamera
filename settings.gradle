@@ -1,0 +1,3 @@
+include ':CustomControlsCameraView'
+include ':app'
+rootProject.name = "CustomControlsCameraSample"
