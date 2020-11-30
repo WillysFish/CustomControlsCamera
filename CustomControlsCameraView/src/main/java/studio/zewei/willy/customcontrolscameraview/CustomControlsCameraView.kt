@@ -71,21 +71,25 @@ class CustomControlsCameraView @JvmOverloads constructor(
             setUpCamera()
         }
     }
+
     var controlsView: View? = null
     var isNeedFlashlight = false
 
     var lifecycleOwner: LifecycleOwner? = null
     var controlsLayoutId: Int? = null
+    var initFinishedCallback = {}
 
     /**
      * Necessarily invoke the function for initial params from owner.
      * */
     fun initCameraWithOwner(
         lifecycleOwner: LifecycleOwner,
-        @LayoutRes controlsLayoutId: Int
+        @LayoutRes controlsLayoutId: Int,
+        initFinishedCallback: () -> Unit
     ) {
         this.lifecycleOwner = lifecycleOwner
         this.controlsLayoutId = controlsLayoutId
+        this.initFinishedCallback = initFinishedCallback
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -110,6 +114,8 @@ class CustomControlsCameraView @JvmOverloads constructor(
                 hasFrontCamera() -> CameraSelector.LENS_FACING_FRONT
                 else -> throw IllegalStateException("Back and front camera are unavailable")
             }
+
+            initFinishedCallback()
 
             // Build and bind the camera use cases
             bindCameraUseCases()
@@ -184,7 +190,7 @@ class CustomControlsCameraView @JvmOverloads constructor(
                 container.removeView(it)
             }
             controlsView = View.inflate(context, id, container)
-        }?: run { throw IllegalStateException("Need to invoke initCameraWithOwner() first.") }
+        } ?: run { throw IllegalStateException("Need to invoke initCameraWithOwner() first.") }
     }
 
     private fun hasBackCamera(): Boolean {

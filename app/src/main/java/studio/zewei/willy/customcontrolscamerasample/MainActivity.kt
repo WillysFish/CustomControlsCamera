@@ -38,10 +38,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // Init CameraView
-        cameraView.initCameraWithOwner(this, R.layout.camera_control_layout)
-
-        // Wait for the views to be properly laid out
-        cameraView.postDelayed({
+        cameraView.initCameraWithOwner(this, R.layout.camera_control_layout) {
+            // Callback after the views to be properly laid out
             val controlsView = cameraView.controlsView
 
             controlsView?.apply {
@@ -66,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-        }, 50)
+        }
     }
 
     override fun onRequestPermissionsResult(
