@@ -36,7 +36,7 @@ allprojects {
 Add the dependency
 ```gradle
 dependencies {
-   implementation 'com.github.WillysFish:CustomControlsCamera:1.0.0'
+   implementation 'com.github.WillysFish:CustomControlsCamera:1.1.0'
 }
 ```
 ### Maven:
