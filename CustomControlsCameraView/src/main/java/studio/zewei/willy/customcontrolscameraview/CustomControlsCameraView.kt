@@ -195,6 +195,8 @@ class CustomControlsCameraView @JvmOverloads constructor(
         return cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) ?: false
     }
 
+    private fun isFrontLens(): Boolean = CameraSelector.LENS_FACING_FRONT == lensFacing
+
     // Fake Flashlight for Front Lens.
     private fun openFrontFlashlight(isOpen: Boolean) {
         val activity = (context as Activity)
@@ -207,9 +209,9 @@ class CustomControlsCameraView @JvmOverloads constructor(
         }
     }
 
-    fun switchLensFacing() {
+    fun switchLensFacing(specific: Int? = null) {
         lensFacing =
-            if (CameraSelector.LENS_FACING_FRONT == lensFacing)
+            specific ?: if (CameraSelector.LENS_FACING_FRONT == lensFacing)
                 CameraSelector.LENS_FACING_BACK
             else
                 CameraSelector.LENS_FACING_FRONT
