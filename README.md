@@ -54,7 +54,7 @@ Add the dependency
 <dependency>
   <groupId>com.github.WillysFish</groupId>
   <artifactId>CustomControlsCamera</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 # How to use?  
@@ -89,15 +89,13 @@ Add the dependency
 - Initial your controls layout and get it.
 ```kotlin
   // Init CameraView
-  cameraView.initCameraWithOwner(this, R.layout.camera_control_layout)
-
-  // Wait for the views to be properly laid out
-  cameraView.postDelayed({
+  cameraView.initCameraWithOwner(this, R.layout.camera_control_layout) {
+      
+      // Wait for the views to be properly laid out
       val controlsView = cameraView.controlsView
 
       do something with controls...
-
-  }, 50)
+  }
 ```
 &nbsp;
 - Finished! You can operate camera right now.
@@ -111,7 +109,7 @@ Add the dependency
   ```
   - Switch Lens  
   ```kotlin
-      fun switchLensFacing() {}
+      fun switchLensFacing(specific: Int? = null) {}
   ```
   - Open Flashlight  
   ```kotlin
