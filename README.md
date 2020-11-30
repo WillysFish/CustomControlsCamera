@@ -109,7 +109,7 @@ Add the dependency
   ```
   - Switch Lens  
   ```kotlin
-      fun switchLensFacing(specific: Int? = null) {}
+      fun switchLensFacing(specific: CameraLens? = null) {}
   ```
   - Open Flashlight  
   ```kotlin
