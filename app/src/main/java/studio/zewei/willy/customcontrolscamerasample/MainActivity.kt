@@ -14,10 +14,10 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main_permission.*
-import kotlinx.android.synthetic.main.camera_control_layout.*
-import kotlinx.android.synthetic.main.dialog_photo_show.view.*
+import studio.zewei.willy.customcontrolscamerasample.databinding.ActivityMainBinding
+import studio.zewei.willy.customcontrolscamerasample.databinding.ActivityMainPermissionBinding
+import studio.zewei.willy.customcontrolscamerasample.databinding.CameraControlLayoutBinding
+import studio.zewei.willy.customcontrolscamerasample.databinding.DialogPhotoShowBinding
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -27,26 +27,30 @@ class MainActivity : AppCompatActivity() {
         private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
     }
 
+    private val permissionBinding by lazy { ActivityMainPermissionBinding.inflate(layoutInflater) }
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!hasPermissions(this)) {
-            setContentView(R.layout.activity_main_permission)
+            setContentView(permissionBinding.root)
             requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
-            permissionTv.setOnClickListener {
+            permissionBinding.permissionTv.setOnClickListener {
                 requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
             }
             return
         }
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
         // Init CameraView
-        cameraView.initCameraWithOwner(this, R.layout.camera_control_layout) {
+        binding.cameraView.initCameraWithOwner(this, R.layout.camera_control_layout) {
             // Callback after the views to be properly laid out
-            val controlsView = cameraView.controlsView
-
+            val controlsView = binding.cameraView.controlsView
             controlsView?.apply {
-                captureBtn.setOnClickListener {
-                    cameraView.capture(getCaptureFile()) { uri, hasFace ->
+                val controlBinding = CameraControlLayoutBinding.bind(this)
+
+                controlBinding.captureBtn.setOnClickListener {
+                    binding.cameraView.capture(getCaptureFile()) { uri, hasFace ->
                         // show dialog on ui thread
                         runOnUiThread {
                             showPhotoDialog(uri)
@@ -61,17 +65,17 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                lenSwitchBtn.setOnClickListener {
-                    cameraView.switchLensFacing()
+                controlBinding.lenSwitchBtn.setOnClickListener {
+                    binding.cameraView.switchLensFacing()
                 }
 
-                flashlightSwitchBtn.setOnClickListener {
-                    if (cameraView.isNeedFlashlight) {
-                        cameraView.isNeedFlashlight = false
-                        flashlightSwitchBtn.setImageResource(R.drawable.ic_camera_no_light)
+                controlBinding.flashlightSwitchBtn.setOnClickListener {
+                    if (binding.cameraView.isNeedFlashlight) {
+                        binding.cameraView.isNeedFlashlight = false
+                        controlBinding.flashlightSwitchBtn.setImageResource(R.drawable.ic_camera_no_light)
                     } else {
-                        cameraView.isNeedFlashlight = true
-                        flashlightSwitchBtn.setImageResource(R.drawable.ic_camera_light)
+                        binding.cameraView.isNeedFlashlight = true
+                        controlBinding.flashlightSwitchBtn.setImageResource(R.drawable.ic_camera_light)
                     }
                 }
             }
@@ -116,9 +120,11 @@ class MainActivity : AppCompatActivity() {
         val view =
             LayoutInflater.from(this).inflate(R.layout.dialog_photo_show, null, false)
 
+        val dialogBinding = DialogPhotoShowBinding.bind(view)
+
         Glide.with(this)
             .load(uri)
-            .into(view.dialogPhoto)
+            .into(dialogBinding.dialogPhoto)
 
         val builder = AlertDialog.Builder(this, R.style.TransparentBgDialog)
         builder.setView(view)
