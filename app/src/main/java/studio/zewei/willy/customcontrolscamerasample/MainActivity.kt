@@ -12,6 +12,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main_permission.*
 import kotlinx.android.synthetic.main.camera_control_layout.*
@@ -44,9 +46,18 @@ class MainActivity : AppCompatActivity() {
 
             controlsView?.apply {
                 captureBtn.setOnClickListener {
-                    cameraView.capture(getCaptureFile()) {
+                    cameraView.capture(getCaptureFile()) { uri, hasFace ->
                         // show dialog on ui thread
-                        runOnUiThread { showPhotoDialog(it) }
+                        runOnUiThread {
+                            showPhotoDialog(uri)
+
+                            if (hasFace == true)
+                                Snackbar.make(this, "Detected 😀 !!!", LENGTH_INDEFINITE)
+                                    .apply {
+                                        setAction("OK") { dismiss() }
+                                        show()
+                                    }
+                        }
                     }
                 }
 

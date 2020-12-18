@@ -44,6 +44,12 @@ class CustomControlsCameraView @JvmOverloads constructor(
         private const val TAG = "CustomCameraView"
     }
 
+    private val attributes by lazy {
+        context.obtainStyledAttributes(attrs, R.styleable.CustomControlsCameraView)
+    }
+    private val enableFaceDetection =
+        attributes.getBoolean(R.styleable.CustomControlsCameraView_enableFaceDetection, false)
+
     private val container by lazy { this }
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var imageCapture: ImageCapture? = null
@@ -57,11 +63,21 @@ class CustomControlsCameraView @JvmOverloads constructor(
         view
     }
 
+    private val surfaceView by lazy {
+        val view = FaceContourSurfaceView(context)
+        view.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+        view.setBackgroundColor(Color.TRANSPARENT)
+        view
+    }
+
     // Create a Executor for camera operations
     private val cameraExecutor by lazy { Executors.newSingleThreadExecutor() }
 
     init {
         addView(previewView)
+
+        if (enableFaceDetection)
+            addView(surfaceView)
 
         // Wait for the views to be properly laid out
         previewView.post {
@@ -75,9 +91,9 @@ class CustomControlsCameraView @JvmOverloads constructor(
     var controlsView: View? = null
     var isNeedFlashlight = false
 
-    var lifecycleOwner: LifecycleOwner? = null
-    var controlsLayoutId: Int? = null
-    var initFinishedCallback = {}
+    private var lifecycleOwner: LifecycleOwner? = null
+    private var controlsLayoutId: Int? = null
+    private var initFinishedCallback = {}
 
     /**
      * Necessarily invoke the function for initial params from owner.
@@ -106,7 +122,7 @@ class CustomControlsCameraView @JvmOverloads constructor(
     /** Initialize CameraX, and prepare to bind the camera use cases  */
     private fun setUpCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-        cameraProviderFuture.addListener(Runnable {
+        cameraProviderFuture.addListener({
             cameraProvider = cameraProviderFuture.get()
 
             lensFacing = when {
@@ -153,6 +169,14 @@ class CustomControlsCameraView @JvmOverloads constructor(
             .setTargetAspectRatio(screenAspectRatio)
             .setTargetRotation(rotation)
             .build()
+            .apply {
+                if (enableFaceDetection)
+                    setAnalyzer(cameraExecutor) { imageProxy ->
+                        FaceDetectionUtil.detectFaceByImageProxy(imageProxy) { faces ->
+                            faces?.apply { surfaceView.drawFaceRect(this) }
+                        }
+                    }
+            }
 
         // Must unbind the use-cases before rebinding them
         cameraProvider.unbindAll()
@@ -231,7 +255,7 @@ class CustomControlsCameraView @JvmOverloads constructor(
         bindCameraUseCases()
     }
 
-    fun capture(photoFile: File, finishAction: (uri: Uri) -> Unit) {
+    fun capture(photoFile: File, finishAction: (uri: Uri, hasFace: Boolean?) -> Unit) {
         // Get a stable reference of the modifiable image capture use case
         imageCapture?.let { imageCapture ->
 
@@ -268,10 +292,16 @@ class CustomControlsCameraView @JvmOverloads constructor(
                         // close flashlight of front len
                         container.post { openFrontFlashlight(false) }
 
-                        finishAction(savedUri!!)
-
-                        // MediaScanner for other apps be able to access our images
                         savedUri?.also {
+                            // return photo and face detection result
+                            if (enableFaceDetection)
+                                FaceDetectionUtil.hasFaceInFile(context, it) { hasFace ->
+                                    finishAction(it, hasFace)
+                                }
+                            else
+                                finishAction(it, null)
+
+                            // MediaScanner for other apps be able to access our images
                             val mimeType = MimeTypeMap.getSingleton()
                                 .getMimeTypeFromExtension(it.toFile().extension)
                             MediaScannerConnection.scanFile(
