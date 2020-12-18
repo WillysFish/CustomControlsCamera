@@ -1,12 +1,20 @@
-# CustomControlsCameraSample
-<img src="https://github.com/WillysFish/CustomControlsCamera/blob/main/device-2020-11-10-185405.png" height="20%" width="20%" > <img src="https://github.com/WillysFish/CustomControlsCamera/blob/main/device-2020-11-10-185459.png" height="20%" width="20%" >
+# CustomControlsCamera with Face Detection
+<img src="https://github.com/WillysFish/FaceDetectionControlsCamera/blob/main/face-real.jpg" height="20%" width="20%" > <img src="https://github.com/WillysFish/CustomControlsCamera/blob/main/device-2020-11-10-185405.png" height="20%" width="20%" > <img src="https://github.com/WillysFish/CustomControlsCamera/blob/main/device-2020-11-10-185459.png" height="20%" width="20%" >
 
 CustomControlsCamera is a camera preview view which customizable controls.  
 And It also offers some functions to operation camera.  
 They were implemented with CameraX API  
+  
+&nbsp;
+
+version 1.2.1   
+Added the function of Face Detection  
 
 
 # Functions
+- Face Detection (Photo Face & Real Face)  
+  <img src="https://github.com/WillysFish/CustomControlsCamera/blob/main/face-photo.gif" height="20%" width="20%" >  
+  
 - Rotate screen
 
 - Capture
@@ -36,7 +44,7 @@ allprojects {
 Add the dependency
 ```gradle
 dependencies {
-   implementation 'com.github.WillysFish:CustomControlsCamera:1.1.0'
+   implementation 'com.github.WillysFish:CustomControlsCamera:1.2.1'
 }
 ```
 ### Maven:
@@ -54,7 +62,7 @@ Add the dependency
 <dependency>
   <groupId>com.github.WillysFish</groupId>
   <artifactId>CustomControlsCamera</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.1</version>
 </dependency>
 ```
 # How to use?  
@@ -82,9 +90,15 @@ Add the dependency
     <studio.zewei.willy.customcontrolscameraview.CustomControlsCameraView
         android:id="@+id/cameraView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:enableFaceDetection="true" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```  
+&nbsp;
+- Enable Face Detection if you need.
+```xml
+app:enableFaceDetection="true"
+```
 &nbsp;
 - Initial your controls layout and get it.
 ```kotlin
@@ -105,7 +119,7 @@ Add the dependency
   ```
   - Capture  
   ```kotlin
-      fun capture(photoFile: File, finishAction: (uri: Uri) -> Unit) {}
+      fun capture(photoFile: File, finishAction: (uri: Uri, hasFace: Boolean?) -> Unit) {}
   ```
   - Switch Lens  
   ```kotlin
